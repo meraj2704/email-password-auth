@@ -1,6 +1,9 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import{createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
+import app from '../../Firebase/firebase.config';
+import { Result } from 'postcss';
 
 const RegisterRbs = () => {
     const handleRegisterRbs = event =>{
@@ -8,6 +11,16 @@ const RegisterRbs = () => {
         const email = event.target.email.value;
         const password = event.target.password.value;
         console.log(email,password);
+        const auth = getAuth(app);
+        createUserWithEmailAndPassword(auth,email,password)
+        .then(result =>{
+            const loggedUser = result.user;
+            console.log(loggedUser);
+        })
+        .catch(error =>{
+            console.error(error);
+        })
+        
     }
     return (
         <div className='w-1/2 mx-auto mt-5'>
