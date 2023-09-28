@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import{createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
+import{createUserWithEmailAndPassword, getAuth, sendEmailVerification } from 'firebase/auth'
 import app from '../../Firebase/firebase.config';
 import { Link } from 'react-router-dom';
 
@@ -44,6 +44,7 @@ const RegisterRbs = () => {
             const loggedUser = result.user;
             event.target.reset();
             console.log(loggedUser);
+            emailVarification(loggedUser);
             // errorMessage=null;
             
             setSuccessMessage('User added successfully.')
@@ -54,6 +55,13 @@ const RegisterRbs = () => {
            
         })
         
+    }
+    const emailVarification = user => {
+        sendEmailVerification(user)
+        .then(result => {
+            console.log(result);
+            alert('Please verify your email.')
+        })
     }
     return (
         <div className='w-1/2 mx-auto mt-5'>

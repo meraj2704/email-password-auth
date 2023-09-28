@@ -1,51 +1,49 @@
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification } from 'firebase/auth';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import app from '../../Firebase/firebase.config';
+const auth = getAuth(app);
 
 const Login = () => {
-    const [successMessage,setSuccessMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const handleLogin = event =>{
+    const handleLogin = event => {
         event.preventDefault();
         const email = event.target.email.value;
         const password = event.target.password.value;
-        console.log(email,password);
+        console.log(email, password);
         console.log(event);
         setErrorMessage('');
         setSuccessMessage('');
-        if(!/(?=.*[a-z])/.test(password))
-        {
-           setErrorMessage('Add at least one lowercase latter!')
-           return
+        if (!/(?=.*[a-z])/.test(password)) {
+            setErrorMessage('Add at least one lowercase latter!')
+            return
         }
-        else if(!/(?=.*[A-Z])/.test(password))
-        {
-           setErrorMessage('Add at least one uppercase latter!')
-           return
+        else if (!/(?=.*[A-Z])/.test(password)) {
+            setErrorMessage('Add at least one uppercase latter!')
+            return
         }
-        else if(!/(?=.*\d)/.test(password))
-        {
-           setErrorMessage('Add at least one digit!')
-           return
+        else if (!/(?=.*\d)/.test(password)) {
+            setErrorMessage('Add at least one digit!')
+            return
         }
-        else if(!/.{8,}/.test(password))
-        {
-           setErrorMessage('Password length at least 8!')
-           return
+        else if (!/.{8,}/.test(password)) {
+            setErrorMessage('Password length at least 8!')
+            return
         }
-        const auth = getAuth(app);
-        createUserWithEmailAndPassword(auth,email,password)
-        .then(result=>{
-            const loggedUser = result.user;
-            setSuccessMessage('Logged in successfully');
-            // alert(successMessage);
-        })
-        .catch(error =>{
-            console.error(error);
-            setErrorMessage(error.message);
-            // alert(errorMessage);
-        })
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(result => {
+                const loggedUser = result.user;
+                setSuccessMessage('Logged in successfully');
+                
+                // alert(successMessage);
+            })
+            .catch(error => {
+                console.error(error);
+                setErrorMessage(error.message);
+                // alert(errorMessage);
+            })
     }
     return (
         <div>
@@ -89,7 +87,7 @@ const Login = () => {
                     {
                         <div>
                             <p className='text-danger'>{errorMessage}</p>
-                        <p className='text-success'>{successMessage}</p>
+                            <p className='text-success'>{successMessage}</p>
                         </div>
                     }
                 </div>
