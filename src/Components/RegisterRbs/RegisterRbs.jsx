@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import{createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
 import app from '../../Firebase/firebase.config';
+import { Link } from 'react-router-dom';
 
 
 const RegisterRbs = () => {
@@ -71,7 +72,8 @@ const RegisterRbs = () => {
                 </Form.Group>
                 <Button  className='border-3 text-black' type="submit">
                     Submit
-                </Button>
+                </Button> 
+                <p>Continue with <Link className='text-primary' to='/login'>LogIn</Link></p>
                 {
                     <div>
                         <p className='text-danger'>{errorMessage}</p>
