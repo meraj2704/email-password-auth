@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import{createUserWithEmailAndPassword, getAuth, sendEmailVerification } from 'firebase/auth'
+import{createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, updateProfile } from 'firebase/auth'
 import app from '../../Firebase/firebase.config';
 import { Link } from 'react-router-dom';
 
@@ -9,13 +9,15 @@ import { Link } from 'react-router-dom';
 const RegisterRbs = () => {
     const [errorMessage,setErrorMessage] = useState('');
     const [successMessage,setSuccessMessage] = useState('');
+    const emailRef = useRef();
     const handleRegisterRbs = event =>{
         
         event.preventDefault();
         const email = event.target.email.value;
         const password = event.target.password.value;
+        const name = event.target.name.value;
         // errorMessage='';
-        console.log(email,password);
+        console.log(name,email,password);
         setSuccessMessage('');
         setErrorMessage('');
         if(!/(?=.*[a-z])/.test(password))
@@ -43,10 +45,12 @@ const RegisterRbs = () => {
         .then(result =>{
             const loggedUser = result.user;
             event.target.reset();
-            console.log(loggedUser);
-            emailVarification(loggedUser);
-            // errorMessage=null;
             
+            emailVarification(loggedUser);
+            updateProfileInfo(loggedUser,name)
+            // errorMessage=null;
+            console.log(event);
+            console.log(loggedUser)
             setSuccessMessage('User added successfully.')
         })
         .catch(error =>{
@@ -59,16 +63,44 @@ const RegisterRbs = () => {
     const emailVarification = user => {
         sendEmailVerification(user)
         .then(result => {
-            console.log(result);
+            // console.log(result);
             alert('Please verify your email.')
+        })
+    }
+    const handleResetPassword = event =>{
+        console.log(emailRef.current.value)
+        const email = emailRef.current.value;
+        const auth = getAuth(app);
+        sendPasswordResetEmail(auth, email)
+        .then(()=>{
+            console.log('Send email for reset password')
+        })
+        .catch(error =>{
+            console.log(error.message);
+        })
+    }
+    const updateProfileInfo = (user, name) =>{
+        const auth = getAuth(app)
+        updateProfile(user, {
+            displayName: name
+        })
+        .then(()=>{
+            console.log('Update profile name')
+        })
+        .catch(error=>{
+            console.log(error.message)
         })
     }
     return (
         <div className='w-1/2 mx-auto mt-5'>
             <Form onSubmit={handleRegisterRbs}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control type="text" required  name="name" placeholder="Enter name" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" required  name="email" placeholder="Enter email" />
+                    <Form.Control type="email" required ref={emailRef}  name="email" placeholder="Enter email" />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -81,7 +113,8 @@ const RegisterRbs = () => {
                 <Button  className='border-3 text-black' type="submit">
                     Submit
                 </Button> 
-                <p>Continue with <Link className='text-primary' to='/login'>LogIn</Link></p>
+                
+                <p>Continue with <Link  className='text-primary' to='/login'>LogIn</Link></p>
                 {
                     <div>
                         <p className='text-danger'>{errorMessage}</p>
@@ -89,6 +122,7 @@ const RegisterRbs = () => {
                     </div>
                 }
             </Form>
+            <p>Forget password? Please <button onClick={handleResetPassword} className='btn btn-link'>Reset Password</button></p>
         </div>
     );
 };
